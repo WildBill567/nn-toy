@@ -1,7 +1,9 @@
 
 
 class NodeGene:
-    counter = 0
+    #Counter starts at zero, phenotype will always create a bia
+    #node with index 0
+    counter = 1
 
     def __init__(self, *, activation='sigmoid', node_type='HIDDEN', idx=-1):
         if idx == -1:
@@ -13,9 +15,9 @@ class NodeGene:
             raise ValueError("Node gene cannot have negative index")
 
         self.node_type = node_type
-        assert self.node_type in ['INPUT', 'OUTPUT', 'HIDDEN', 'BIAS'], "Invalid node type"
+        assert self.node_type in ['INPUT', 'OUTPUT', 'HIDDEN'], "Invalid node type"
 
-        if self.node_type in ('INPUT', 'BIAS'):
+        if self.node_type == 'INPUT':
             self.activation = None
         else:
             self.activation = activation

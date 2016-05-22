@@ -53,10 +53,6 @@ class TestNodeGene(TestCase):
         assert gene1.idx + 1 == gene2.idx
         assert gene2.idx + 1 == gene3.idx
 
-    def test_node_gene_has_no_activation_for_bias(self):
-        gene = NodeGene(activation='sigmoid', node_type='BIAS')
-        assert gene.activation is None, "Bias node should have nonetype activation"
-
     def test_node_gene_has_no_activation_for_input(self):
         gene=NodeGene(activation='sigmoid', node_type='INPUT')
         assert gene.activation is None, "Input node should have nonetype activation"
