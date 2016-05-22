@@ -1,7 +1,7 @@
 from .genes import NodeGene, LinkGene
 
-class Genome:
 
+class Genome:
     def __init__(self, *, n_inputs=None, n_outputs=None, node_genes=None):
         self.input_genes = []
         self.output_genes = []
@@ -48,3 +48,12 @@ class Genome:
             for i in range(self.n_outputs):
                 self.output_genes.append(NodeGene(node_type='OUTPUT'))
 
+        assert not self._has_duplicate_node_indices(), "Genome has duplicate node indices"
+
+    def _has_duplicate_node_indices(self):
+        node_genes = self.input_genes + self.hidden_genes + self.output_genes
+        for i in range(len(node_genes)):
+            for j in range(i+1, len(node_genes)):
+                if node_genes[i].idx == node_genes[j].idx:
+                    return True
+        return False

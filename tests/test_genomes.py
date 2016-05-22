@@ -6,9 +6,16 @@ from neat.genome import Genome
 class TestGenome(TestCase):
 
     def setUp(self):
-        self.input_genes = [NodeGene(node_type='INPUT'), NodeGene(node_type='INPUT')]
-        self.output_genes = [NodeGene(node_type='OUTPUT'), NodeGene(node_type='OUTPUT')]
-        self.test_genes = self.input_genes.extend(self.output_genes)
+        self.test_genes = [NodeGene(node_type='INPUT'), NodeGene(node_type='INPUT'), NodeGene(node_type='OUTPUT')]
+
+    def test_genome_does_not_allow_duplicate_node_indices(self):
+        print(len(self.test_genes))
+        self.test_genes[0].idx = 1
+        self.test_genes[1].idx = 1
+        try:
+            genome = Genome(node_genes=self.test_genes)
+        except AssertionError:
+            pass
 
     def test_genome_needs_right_number_input_genes(self):
         try:
