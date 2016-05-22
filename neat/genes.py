@@ -27,12 +27,13 @@ class NodeGene:
 class LinkGene:
     innovation_counter = 0
 
-    def __init__(self, src_node, sink_node, *, weight=0.0, innov=-1):
+    def __init__(self, src_node, sink_node, *, weight=0.0, innov=-1, enabled=True):
         if src_node == sink_node:
             raise ValueError("Links cannot be self-loops")
         self.src = src_node
         self.sink = sink_node
         self.weight = weight
+        self.enabled = enabled
 
         if innov == -1:
             self.innovation_number = LinkGene.innovation_counter

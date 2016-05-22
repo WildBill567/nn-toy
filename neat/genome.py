@@ -2,10 +2,11 @@ from .genes import NodeGene, LinkGene
 
 
 class Genome:
-    def __init__(self, *, n_inputs=None, n_outputs=None, node_genes=None):
+    def __init__(self, *, n_inputs=None, n_outputs=None, node_genes=None, link_genes=None):
         self.input_genes = []
         self.output_genes = []
         self.hidden_genes = []
+        self.link_genes = []
 
         if node_genes is None:
             if n_inputs is None or n_outputs is None:
@@ -49,6 +50,11 @@ class Genome:
                 self.output_genes.append(NodeGene(node_type='OUTPUT'))
 
         assert not self._has_duplicate_node_indices(), "Genome has duplicate node indices"
+
+        if link_genes is not None:
+            for gene in link_genes:
+                self.link_genes.append(gene)
+            self.n_links = len(self.link_genes)
 
     def _has_duplicate_node_indices(self):
         node_genes = self.input_genes + self.hidden_genes + self.output_genes
