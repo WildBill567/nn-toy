@@ -2,7 +2,7 @@ from unittest import TestCase
 
 from neat.genes import NodeGene, LinkGene
 from neat.genome import Genome
-from neat.feedforwardphenome import FeedForwardPhenome
+from neat.phenome import FeedForwardPhenome
 
 
 class TestPhenome(TestCase):
