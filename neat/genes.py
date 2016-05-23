@@ -2,13 +2,20 @@ import numpy.random as random
 
 from neat.activations import activation_types
 
+
 class NodeGene:
-    #Counter starts at zero, phenotype will always create a bias
-    #node with index 0
-    #TODO initialize this at program start
+
+    # counter starts at 1 and goes up
+    # TODO find a better way
     counter = 1
 
     def __init__(self, *, activation='sigmoid', node_type='HIDDEN', idx=-1):
+        """
+
+        @param activation: node's activation function
+        @param node_type: node type, one of 'HIDDEN', 'INPUT', 'OUTPUT'
+        @param idx: node's index
+        """
         if idx == -1:
             self.idx = NodeGene.counter
             NodeGene.counter += 1
@@ -31,6 +38,14 @@ class LinkGene:
     innovation_counter = 0
 
     def __init__(self, src_node, sink_node, *, weight=None, innov=-1, enabled=True):
+        """
+
+        :param src_node: source
+        :param sink_node: sink
+        :param weight: weight
+        :param innov: innovation number
+        :param enabled: is link active?
+        """
         if src_node == sink_node:
             raise ValueError("Links cannot be self-loops")
         self.src = src_node

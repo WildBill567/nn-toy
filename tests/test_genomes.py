@@ -14,6 +14,11 @@ class TestGenome(TestCase):
                                 NodeGene(node_type='OUTPUT')]
         self.test_link_genes = [LinkGene(2, 3, weight=1), LinkGene(1, 3, weight=1)]
 
+    def test_simple_size(self):
+        g = Genome(node_genes=self.test_node_genes, link_genes=self.test_link_genes)
+        sz = g.size()
+        assert sz == (0, 2), "Size should be (0,2), is (%i, %i)" % (sz[0], sz[1])
+
     def test_genome_distance_to_self_is_zero(self):
         g2 = Genome(node_genes=self.test_node_genes, link_genes=self.test_link_genes)
         g1 = Genome(node_genes=self.test_node_genes, link_genes=self.test_link_genes)

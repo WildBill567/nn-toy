@@ -5,12 +5,12 @@ from neat import activation_functions
 
 
 def find_feed_forward_layers(inputs, connections):
-    '''
+    """
     Collect the layers whose members can be evaluated in parallel in a feed-forward network.
     :param inputs: list of the network input nodes
     :param connections: list of (input, output) connections in the network.
     Returns a list of layers, with each layer consisting of a set of node identifiers.
-    '''
+    """
 
     # TODO: Detect and omit nodes whose output is ultimately never used.
 
@@ -38,6 +38,11 @@ def find_feed_forward_layers(inputs, connections):
 
 class FeedForwardPhenome:
     def __init__(self, genome):
+        """
+        FeedForwardPhenome - A feedforward network
+
+        :param genome: the genome to create the phenome
+        """
         self.graph, node_lists = self._construct_graph(genome)
         self.input_nodes, self.hidden_nodes, self.output_nodes = node_lists
         self.links = [(g.src, g.sink) for g in genome.link_genes]
@@ -61,6 +66,11 @@ class FeedForwardPhenome:
         self.values = [0.0] * (1 + max(used_nodes))
 
     def serial_activate(self, inputs):
+        """
+        serial_activate - gives network output for an input
+        :param inputs: numerical input list
+        :return: numerical output list
+        """
         if len(self.input_nodes) != len(inputs):
             raise ValueError("Expected {0} inputs, got {1}".format(len(self.input_nodes), len(inputs)))
         self.values[0] = 1.0
@@ -77,6 +87,7 @@ class FeedForwardPhenome:
         return [self.values[i] for i in self.output_nodes]
 
     def draw(self):
+        """Draws the network with matplotlib"""
         pos = {0: (-1.5, 0)}
         for idx in range(len(self.input_nodes)):
             pos[idx+1] = (idx, 0)
@@ -99,6 +110,7 @@ class FeedForwardPhenome:
 
     @staticmethod
     def _construct_graph(genome):
+        """Constructs the DiGraph"""
         graph = nx.DiGraph()
         graph.add_node(0, {'node_type': 'BIAS', 'val': 1})
         input_list = []
@@ -122,3 +134,5 @@ class FeedForwardPhenome:
                            {'weight': gene.weight,
                             'enabled': gene.enabled})
         return graph, (input_list, hidden_list, output_list)
+
+
