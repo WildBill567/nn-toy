@@ -41,6 +41,66 @@
 #   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 #   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-excess_coefficient = 1.0
-disjoint_coefficient = 1.0
-weight_coefficient = 1.0
+import os
+from configparser import ConfigParser
+
+from neat.activations import activation_types
+
+class Config:
+
+    def __init__(self, filename=None):
+        self.type_config = {}
+
+        parameters = ConfigParser()
+        if filename is not None:
+            if not os.path.isfile(filename):
+                raise Exception('No such config file: ' + os.path.abspath(filename))
+
+            with open(filename) as f:
+                parameters.read_file(f)
+
+        # Phenotype parameters
+        self.num_inputs = int(parameters.get('Phenotype', 'num_inputs', fallback=2))
+        self.num_outputs = int(parameters.get('Phenotype', 'num_outputs', fallback=2))
+        self.activation_functions = parameters.get('Phenotype', 'activation_functions', fallback="sigmoid relu").strip().split()
+
+        # Population parameters
+        self.pop_size = int(parameters.get('Population', 'pop_size', fallback=40))
+
+
+        # Mutation parameters
+        self.multiple_mutations = bool(parameters.getboolean('Mutation', 'multiple_mutations', fallback=False))
+        self.prob_add_conn = float(parameters.get('Mutation', 'prob_add_conn', fallback=0.1))
+        self.prob_add_node = float(parameters.get('Mutation', 'prob_add_node', fallback=0.05))
+        self.prob_delete_conn = float(parameters.get('Mutation', 'prob_delete_conn', fallback=0.01))
+        self.prob_delete_node = float(parameters.get('Mutation', 'prob_delete_node', fallback=0.01))
+        self.prob_mutate_weight = float(parameters.get('Mutation', 'prob_mutate_weight', fallback=0.6))
+        self.weight_mutation_power = float(parameters.get('Mutation', 'weight_mutation_power', fallback=1.2))
+        self.prob_mutate_activation = float(parameters.get('Mutation', 'prob_mutate_activation', fallback=0.0))
+        self.prob_toggle_link = float(parameters.get('Mutation', 'prob_toggle_link', fallback=0.02))
+
+        # Speciation parameters
+        self.compatibility_threshold = float(parameters.get('Speciation', 'compatibility_threshold', fallback=8.0))
+        self.excess_coefficient = float(parameters.get('Speciation', 'excess_coefficient', fallback=1.0))
+        self.disjoint_coefficient = float(parameters.get('Speciation', 'disjoint_coefficient', fallback=1.0))
+        self.weight_coefficient = float(parameters.get('Speciation', 'weight_coefficient', fallback=0.4))
+
+        self._sanity_check()
+
+    def _sanity_check(self):
+        for fn in self.activation_functions:
+            assert fn in activation_types, "Invalid activation: %s" % fn
+        assert self.num_inputs > 0
+        assert self.num_outputs > 0
+        assert self.pop_size > 0
+        self._assert_is_probability(self.prob_add_conn)
+        self._assert_is_probability(self.prob_add_node)
+        self._assert_is_probability(self.prob_delete_conn)
+        self._assert_is_probability(self.prob_delete_node)
+        self._assert_is_probability(self.prob_mutate_activation)
+        self._assert_is_probability(self.prob_mutate_weight)
+        self._assert_is_probability(self.prob_toggle_link)
+
+    @staticmethod
+    def _assert_is_probability(val):
+        assert 0.0 <= val <= 1.0 , "Probability cannot have value %.02f" % val

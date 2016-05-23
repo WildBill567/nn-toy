@@ -41,18 +41,17 @@
 #   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 #   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from neat import config
+from neat.config import Config
 from .genes import NodeGene, LinkGene
 
 
 class Genome:
-    def __init__(self, *, n_inputs=None, n_outputs=None, node_genes=None, link_genes=None):
+    def __init__(self, config, *, node_genes=None, link_genes=None):
         """
         Genome for a NEAT network
         Adapted from: https://github.com/CodeReclaimers/neat-python, accessed May 2016
 
-        :param n_inputs: number of inputs
-        :param n_outputs: number of outputs
+        :param config: Configuration
         :param node_genes: list of NodeGenes
         :param link_genes: list of LinkGenes
         """
@@ -63,16 +62,16 @@ class Genome:
         self.hidden_genes = []
         self.output_genes = []
 
-        self._check_args(n_inputs, n_outputs, node_genes, link_genes)
+        self.config = config
+
+        self._check_args(config.num_inputs,self.config.num_outputs, node_genes, link_genes)
 
         if node_genes is not None:
             self._parse_node_genes(node_genes)
-            if n_inputs is not None:
-                assert n_inputs == len(self.input_genes)
-            if n_outputs is not None:
-                assert n_outputs == len(self.output_genes)
+            assert self.config.num_inputs == len(self.input_genes)
+            assert self.config.num_outputs == len(self.output_genes)
         elif node_genes is None:
-            self._random_genome(n_inputs, n_outputs)
+            self._random_genome(config.num_inputs,self.config.num_outputs)
 
         if link_genes is not None:
             for gene in link_genes:
@@ -115,8 +114,8 @@ class Genome:
 
         most_nodes = max(len(genome1.node_genes()),
                          len(genome2.node_genes()))
-        distance = (config.excess_coefficient * float(excess1 + excess2) / most_nodes +
-                    config.excess_coefficient * float(activation_diff) / most_nodes)
+        distance = (self.config.excess_coefficient * float(excess1 + excess2) / most_nodes +
+                    self.config.excess_coefficient * float(activation_diff) / most_nodes)
 
         # Compute connection gene differences.
         if genome1.link_genes:
@@ -147,10 +146,10 @@ class Genome:
 
             disjoint += len(genome2.link_genes) - matching
 
-            distance += config.excess_coefficient * float(excess) / n_genes
-            distance += config.disjoint_coefficient * float(disjoint) / n_genes
+            distance += self.config.excess_coefficient * float(excess) / n_genes
+            distance += self.config.disjoint_coefficient * float(disjoint) / n_genes
             if matching > 0:
-                distance += config.weight_coefficient * (weight_diff / matching)
+                distance += self.config.weight_coefficient * (weight_diff / matching)
 
         return distance
 

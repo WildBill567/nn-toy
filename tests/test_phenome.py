@@ -14,7 +14,9 @@
 #     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from unittest import TestCase
+from nose.plugins.attrib import attr
 
+from neat.config import Config
 from neat.genes import NodeGene, LinkGene
 from neat.genome import Genome
 from neat.phenome import FeedForwardPhenome
@@ -23,6 +25,7 @@ from neat.phenome import FeedForwardPhenome
 class TestPhenome(TestCase):
 
     def setUp(self):
+        self.config = Config('../tests/conf_tester.conf')
         NodeGene.counter = 1
         self.test_node_genes = [NodeGene(node_type='INPUT', activation='identity'),
                                 NodeGene(node_type='INPUT', activation='identity'),
@@ -34,8 +37,8 @@ class TestPhenome(TestCase):
                                 LinkGene(2, 4, weight=1),
                                 LinkGene(0, 3, weight=1),
                                 LinkGene(0, 4, weight=1)]
-        self.genome = Genome(node_genes=self.test_node_genes, link_genes=self.test_link_genes)
-        self.phenome = FeedForwardPhenome(self.genome)
+        self.genome = Genome(self.config, node_genes=self.test_node_genes, link_genes=self.test_link_genes, )
+        self.phenome = FeedForwardPhenome(self.genome, self.config)
 
     def test_phenome_gives_correct_output_for_simple_net(self):
         outputs = self.phenome.serial_activate([1.0, 1.0])
@@ -52,10 +55,16 @@ class TestPhenome(TestCase):
         outputs = self.phenome.serial_activate([1.0, 1.0])
         assert len(outputs) == len(self.genome.output_genes)
 
+    @attr('draw')
     def test_draw_premade_phenome(self):
-        self.phenome.draw()
+        self.phenome.draw(testing=True)
 
+    @attr('draw')
     def test_draw_random_phenome(self):
-        gen = Genome(n_inputs=3, n_outputs=3)
-        phenome = FeedForwardPhenome(genome=gen)
-        phenome.draw()
+        self.config.num_inputs = 3
+        self.config.num_outputs = 3
+        gen = Genome(self.config)
+        phenome = FeedForwardPhenome(genome=gen, config=self.config)
+        self.config.num_inputs = 2
+        self.config.num_outputs = 2
+        phenome.draw(testing=True)

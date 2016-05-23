@@ -41,10 +41,12 @@
 #   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 #   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import time
 import networkx as nx
 import matplotlib.pyplot as plt
 
 from neat import activation_functions
+
 
 def find_feed_forward_layers(inputs, connections):
     """
@@ -82,7 +84,7 @@ def find_feed_forward_layers(inputs, connections):
 
 
 class FeedForwardPhenome:
-    def __init__(self, genome):
+    def __init__(self, genome, config):
         """
         FeedForwardPhenome - A feedforward network
         Adapted from: https://github.com/CodeReclaimers/neat-python, accessed May 2016
@@ -93,6 +95,7 @@ class FeedForwardPhenome:
         self.input_nodes, self.hidden_nodes, self.output_nodes = node_lists
         self.links = [(g.src, g.sink) for g in genome.link_genes]
         self.node_evals = []
+        self.config = config
 
         layers = find_feed_forward_layers(self.input_nodes, self.links)
         used_nodes = set(self.input_nodes + self.output_nodes)
@@ -133,8 +136,9 @@ class FeedForwardPhenome:
 
         return [self.values[i] for i in self.output_nodes]
 
-    def draw(self):
+    def draw(self, testing=False):
         """Draws the network with matplotlib"""
+        fig = plt.figure()
         pos = {0: (-1.5, 0)}
         for idx in range(len(self.input_nodes)):
             pos[idx+1] = (idx, 0)
@@ -153,7 +157,18 @@ class FeedForwardPhenome:
                                node_color='k')
 
         nx.draw_networkx_edges(self.graph, pos)
-        plt.show()
+        plt.yticks([])
+        plt.xticks([])
+        fig.show()
+        if testing:
+
+            time.sleep(1)
+            plt.close(fig)
+        else:
+            plt.show()
+
+
+
 
     @staticmethod
     def _construct_graph(genome):
@@ -183,3 +198,5 @@ class FeedForwardPhenome:
         return graph, (input_list, hidden_list, output_list)
 
 
+def handle_close(fig):
+    plt.close(fig)
