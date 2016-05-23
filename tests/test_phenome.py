@@ -23,6 +23,7 @@ class TestPhenome(TestCase):
         self.genome = Genome(node_genes=self.test_node_genes, link_genes=self.test_link_genes)
         self.phenome = FeedForwardPhenome(self.genome)
 
+
     def test_phenome_gives_correct_output_for_simple_net(self):
         outputs = self.phenome.serial_activate([1.0, 1.0])
         assert outputs == [3.0, 3.0], "Outpt should be [3, 3], got %s" % ("%.02f, %.02f" % (outputs[0], outputs[1]))

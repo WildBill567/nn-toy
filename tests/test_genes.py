@@ -55,4 +55,4 @@ class TestNodeGene(TestCase):
 
     def test_node_gene_has_no_activation_for_input(self):
         gene=NodeGene(activation='sigmoid', node_type='INPUT')
-        assert gene.activation is None, "Input node should have nonetype activation"
+        assert gene.activation is 'identity', "Input node should have identity activation"

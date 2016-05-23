@@ -21,7 +21,7 @@ class NodeGene:
         assert self.node_type in ['INPUT', 'OUTPUT', 'HIDDEN', 'BIAS'], "Invalid node type"
 
         if self.node_type == 'INPUT':
-            self.activation = None
+            self.activation = 'identity'
         else:
             self.activation = activation
             assert self.activation in activation_types, "Invalid activation"

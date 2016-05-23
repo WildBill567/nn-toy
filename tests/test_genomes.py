@@ -5,12 +5,20 @@ from neat.genome import Genome
 
 
 class TestGenome(TestCase):
-
     def setUp(self):
         NodeGene.counter = 1
-        self.test_node_genes = [NodeGene(node_type='INPUT'), NodeGene(node_type='INPUT'),
-                                NodeGene(node_type='OUTPUT'), NodeGene(node_type='OUTPUT')]
-        self.test_link_genes = [LinkGene(2, 3), LinkGene(1, 3)]
+        LinkGene.innovation_counter = 0
+        self.test_node_genes = [NodeGene(node_type='INPUT',),
+                                NodeGene(node_type='INPUT'),
+                                NodeGene(node_type='OUTPUT'),
+                                NodeGene(node_type='OUTPUT')]
+        self.test_link_genes = [LinkGene(2, 3, weight=1), LinkGene(1, 3, weight=1)]
+
+    def test_genome_distance_to_self_is_zero(self):
+        g2 = Genome(node_genes=self.test_node_genes, link_genes=self.test_link_genes)
+        g1 = Genome(node_genes=self.test_node_genes, link_genes=self.test_link_genes)
+        dist = g1.distance(g2)
+        assert dist == 0, "Distance should be 0, got %.02f" % dist
 
     def test_randomly_created_genome(self):
         genome = Genome(n_inputs=3, n_outputs=3)
@@ -92,7 +100,7 @@ class TestGenome(TestCase):
 
     def test_genome_requires_inputs(self):
         try:
-            genome = Genome(n_inputs=0, n_outputs = 1)
+            genome = Genome(n_inputs=0, n_outputs=1)
             self.fail("Genome cannot have zero inputs")
         except ValueError:
             pass
@@ -113,6 +121,3 @@ class TestGenome(TestCase):
             self.fail("Genome needs positive number of outputs")
         except ValueError:
             pass
-
-
-

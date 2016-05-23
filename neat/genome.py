@@ -1,3 +1,4 @@
+from neat import config
 from .genes import NodeGene, LinkGene
 
 
@@ -9,22 +10,10 @@ class Genome:
         self.hidden_genes = []
         self.output_genes = []
 
-        if node_genes is None and link_genes is not None:
-            raise ValueError("Cannot pass links but not nodes to genome")
-
-        if node_genes is None:
-            if n_inputs is None or n_outputs is None:
-                raise ValueError("If genes are not supplied, must have n_inputs and n_outputs")
-        if n_inputs is not None:
-            if n_inputs < 1:
-                raise ValueError("Genome needs positive number of inputs")
-        if n_outputs is not None:
-            if n_outputs < 1:
-                raise ValueError("Genome needs positive number of outputs")
+        self._check_args(n_inputs, n_outputs, node_genes, link_genes)
 
         if node_genes is not None:
             self._parse_node_genes(node_genes)
-
             if n_inputs is not None:
                 assert n_inputs == len(self.input_genes)
             if n_outputs is not None:
@@ -40,6 +29,81 @@ class Genome:
         assert not self._has_duplicate_links()
         assert not self._has_duplicate_node_indices(), "Genome has duplicate node indices"
         self._check_links_have_valid_nodes()
+
+    # compatibility function
+    def distance(self, other):
+        """ Returns the distance between this genome and the other. """
+        if len(self.link_genes) > len(other.link_genes):
+            genome1 = self
+            genome2 = other
+        else:
+            genome1 = other
+            genome2 = self
+
+        # Compute node gene differences.
+        excess1 = 0
+        excess2 = sum(1 for g2 in genome2.node_genes() if genome1.get_node_by_index(g2.idx) is None)
+        activation_diff = 0
+        num_common = 0
+        for g1 in genome1.node_genes():
+            g2 = genome2.get_node_by_index(g1.idx)
+            if g2 is not None:
+                num_common += 1
+                if g1.activation != g2.activation:
+                    activation_diff += 1
+            else:
+                excess1 += 1
+
+        most_nodes = max(len(genome1.node_genes()),
+                         len(genome2.node_genes()))
+        distance = (config.excess_coefficient * float(excess1 + excess2) / most_nodes +
+                    config.excess_coefficient * float(activation_diff) / most_nodes)
+
+        # Compute connection gene differences.
+        if genome1.link_genes:
+            n_genes = len(genome1.link_genes)
+            weight_diff = 0
+            matching = 0
+            disjoint = 0
+            excess = 0
+
+            max_innovation_genome2 = None
+            if genome2.link_genes:
+                max_innovation_genome2 = max([cg.innovation_number for cg in genome2.link_genes])
+
+            for cg1 in genome1.link_genes:
+                cg2 = genome2.get_link_by_indices(cg1.src, cg1.sink)
+                if cg2 is not None:
+                    # Homologous genes
+                    weight_diff += abs(cg1.weight - cg2.weight)
+                    matching += 1
+
+                    if cg1.enabled != cg2.enabled:
+                        weight_diff += 1.0
+                else:
+                    if max_innovation_genome2 is not None and cg1.innovation_number > max_innovation_genome2:
+                        excess += 1
+                    else:
+                        disjoint += 1
+
+            disjoint += len(genome2.link_genes) - matching
+
+            distance += config.excess_coefficient * float(excess) / n_genes
+            distance += config.disjoint_coefficient * float(disjoint) / n_genes
+            if matching > 0:
+                distance += config.weight_coefficient * (weight_diff / matching)
+
+        return distance
+
+    def node_genes(self):
+        return self.input_genes + self.hidden_genes + self.output_genes
+
+    def get_link_by_indices(self, src, sink):
+        for link in self.link_genes:
+            if link.src == src and link.sink == sink:
+                return link
+        return None
+
 
     def get_node_by_index(self, idx):
         assert idx > 0
@@ -109,3 +173,17 @@ class Genome:
                 raise ValueError("Link sink is an input")
             elif gene.sink == 0:
                 raise ValueError("Link sink is bias")
+
+    @staticmethod
+    def _check_args(n_inputs, n_outputs, node_genes, link_genes):
+        if node_genes is None and link_genes is not None:
+            raise ValueError("Cannot pass links but not nodes to genome")
+        if node_genes is None:
+            if n_inputs is None or n_outputs is None:
+                raise ValueError("If genes are not supplied, must have n_inputs and n_outputs")
+        if n_inputs is not None:
+            if n_inputs < 1:
+                raise ValueError("Genome needs positive number of inputs")
+        if n_outputs is not None:
+            if n_outputs < 1:
+                raise ValueError("Genome needs positive number of outputs")
