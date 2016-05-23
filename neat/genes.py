@@ -2,6 +2,9 @@ import numpy.random as random
 
 from neat.activations import activation_types
 
+# Adapted from
+# https://github.com/CodeReclaimers/neat-python, accessed May 2016
+
 
 class NodeGene:
 
@@ -11,6 +14,8 @@ class NodeGene:
 
     def __init__(self, *, activation='sigmoid', node_type='HIDDEN', idx=-1):
         """
+        NodeGene - class for nodes in a NEAT network
+        Adapted from: https://github.com/CodeReclaimers/neat-python, accessed May 2016
 
         @param activation: node's activation function
         @param node_type: node type, one of 'HIDDEN', 'INPUT', 'OUTPUT'
@@ -39,6 +44,8 @@ class LinkGene:
 
     def __init__(self, src_node, sink_node, *, weight=None, innov=-1, enabled=True):
         """
+        LinkGene - Class for gene for link between nodes
+        Adapted from: https://github.com/CodeReclaimers/neat-python, accessed May 2016
 
         :param src_node: source
         :param sink_node: sink

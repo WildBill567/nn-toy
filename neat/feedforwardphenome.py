@@ -3,13 +3,19 @@ import matplotlib.pyplot as plt
 
 from neat import activation_functions
 
+# Adapted from
+# https://github.com/CodeReclaimers/neat-python, accessed May 2016
+
 
 def find_feed_forward_layers(inputs, connections):
     """
     Collect the layers whose members can be evaluated in parallel in a feed-forward network.
+    Adapted from: https://github.com/CodeReclaimers/neat-python, accessed May 2016
+
     :param inputs: list of the network input nodes
     :param connections: list of (input, output) connections in the network.
     Returns a list of layers, with each layer consisting of a set of node identifiers.
+
     """
 
     # TODO: Detect and omit nodes whose output is ultimately never used.
@@ -40,6 +46,7 @@ class FeedForwardPhenome:
     def __init__(self, genome):
         """
         FeedForwardPhenome - A feedforward network
+        Adapted from: https://github.com/CodeReclaimers/neat-python, accessed May 2016
 
         :param genome: the genome to create the phenome
         """
@@ -68,6 +75,7 @@ class FeedForwardPhenome:
     def serial_activate(self, inputs):
         """
         serial_activate - gives network output for an input
+        Adapted from: https://github.com/CodeReclaimers/neat-python, accessed May 2016
         :param inputs: numerical input list
         :return: numerical output list
         """

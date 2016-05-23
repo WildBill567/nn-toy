@@ -1,5 +1,9 @@
 import numpy as np
 
+# Adapted from
+# https://github.com/CodeReclaimers/neat-python, accessed May 2016
+# few changes - moved to numpy instead of math, added activation_types list
+
 activation_types = ['sigmoid', 'tanh', 'sin', 'gauss', 'relu', 'identity', 'clamped',
                     'inv', 'log', 'exp', 'abs', 'hat', 'square', 'cube']
 

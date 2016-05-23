@@ -1,11 +1,15 @@
 from neat import config
 from .genes import NodeGene, LinkGene
 
+# Adapted from
+# https://github.com/CodeReclaimers/neat-python, accessed May 2016
+
 
 class Genome:
     def __init__(self, *, n_inputs=None, n_outputs=None, node_genes=None, link_genes=None):
         """
         Genome for a NEAT network
+        Adapted from: https://github.com/CodeReclaimers/neat-python, accessed May 2016
 
         :param n_inputs: number of inputs
         :param n_outputs: number of outputs
@@ -43,6 +47,7 @@ class Genome:
     def distance(self, other):
         """
         Distance between two genomes, used for speciation
+        Adapted from: https://github.com/CodeReclaimers/neat-python, accessed May 2016
 
         :param other: the other genome
         :return: distance between the genomes
@@ -110,7 +115,10 @@ class Genome:
         return distance
 
     def size(self):
-        """Complexity size: (n_hidden_nodes, enabled_links)"""
+        """
+        Complexity size: (n_hidden_nodes, enabled_links)
+        Adapted from: https://github.com/CodeReclaimers/neat-python, accessed May 2016
+        """
         hid = len(self.hidden_genes)
         enabled_links = sum([1 for gene in self.link_genes if gene.enabled])
         return hid, enabled_links
