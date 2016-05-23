@@ -12,6 +12,11 @@ class TestGenome(TestCase):
                                 NodeGene(node_type='OUTPUT'), NodeGene(node_type='OUTPUT')]
         self.test_link_genes = [LinkGene(2, 3), LinkGene(1, 3)]
 
+    def test_genome_requires_inputs_as_1_to_n(self):
+        genome = Genome(node_genes=self.test_node_genes, link_genes=self.test_link_genes)
+        for gene in genome.input_genes:
+            assert gene.idx in (1, 2)
+
     def test_genome_doesnt_create_inputs_as_sinks(self):
         link_tester = [LinkGene(0, 1), LinkGene(3, 2), LinkGene(2, 4)]
         try:
@@ -42,11 +47,11 @@ class TestGenome(TestCase):
 
     def test_genome_creates_correct_number_of_inputs(self):
         genome = Genome(node_genes=self.test_node_genes)
-        assert genome.n_inputs == 2, "Genome did not create correct number of input genes"
+        assert len(genome.input_genes) == 2, "Should have 2 inputs, has %i" % len(genome.input_genes)
 
     def test_genome_creates_correct_number_of_outputs(self):
         genome = Genome(node_genes=self.test_node_genes)
-        assert genome.n_outputs == 2
+        assert len(genome.output_genes) == 2, "Should have 2 outputs, has %i" % len(genome.output_genes)
 
     def test_genome_does_not_allow_duplicate_node_indices(self):
         print(len(self.test_node_genes))

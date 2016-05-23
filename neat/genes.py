@@ -1,4 +1,4 @@
-
+from neat.activations import activation_types
 
 class NodeGene:
     #Counter starts at zero, phenotype will always create a bias
@@ -16,13 +16,13 @@ class NodeGene:
             raise ValueError("Node gene cannot have negative index")
 
         self.node_type = node_type
-        assert self.node_type in ['INPUT', 'OUTPUT', 'HIDDEN'], "Invalid node type"
+        assert self.node_type in ['INPUT', 'OUTPUT', 'HIDDEN', 'BIAS'], "Invalid node type"
 
         if self.node_type == 'INPUT':
             self.activation = None
         else:
             self.activation = activation
-            assert self.activation in ['sigmoid', 'relu', 'tanh'], "Invalid activation"
+            assert self.activation in activation_types, "Invalid activation"
 
 
 class LinkGene:
