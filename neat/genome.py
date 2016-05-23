@@ -68,6 +68,8 @@ class Genome:
             elif gene.sink not in node_indices:
                 raise ValueError("Link connecting to missing node")
 
+        assert not self._has_duplicate_links()
+
     def _has_duplicate_node_indices(self):
         node_genes = self.input_genes + self.hidden_genes + self.output_genes
         for i in range(len(node_genes)):
@@ -75,3 +77,15 @@ class Genome:
                 if node_genes[i].idx == node_genes[j].idx:
                     return True
         return False
+
+    def _has_duplicate_links(self):
+        links = [(a.src, a.sink) for a in self.link_genes]
+        for i in range(len(links)):
+            isrc, isnk = links[i]
+            for j in range(i+1, len(links)):
+                jsrc, jsnk = links[j]
+                if isrc == jsrc and isnk == jsnk:
+                    return True
+                elif isrc == jsnk and isnk == jsrc:
+                    return True
+                return False
