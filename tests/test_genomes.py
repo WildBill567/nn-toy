@@ -12,14 +12,21 @@ class TestGenome(TestCase):
                                 NodeGene(node_type='OUTPUT'), NodeGene(node_type='OUTPUT')]
         self.test_link_genes = [LinkGene(2, 3), LinkGene(1, 3)]
 
+    def test_genome_doesnt_create_inputs_as_sinks(self):
+        link_tester = [LinkGene(0, 1), LinkGene(3, 2), LinkGene(2, 4)]
+        try:
+            genome = Genome(node_genes=self.test_node_genes, link_genes=link_tester)
+            self.fail("Genome should raise exception if input is sink")
+        except ValueError:
+            pass
+
     def test_genome_doesnt_create_duplicate_links(self):
-        link_tester = [LinkGene(0, 3), LinkGene(3, 0), LinkGene(2, 4)]
+        link_tester = [LinkGene(0, 3), LinkGene(1, 3), LinkGene(2, 4)]
         try:
             genome = Genome(node_genes=self.test_node_genes, link_genes=link_tester)
             self.fail("Genome should raise exception if duplicate links exist")
         except AssertionError:
             pass
-
 
     def test_genome_only_links_to_valid_nodes(self):
         link_tester = [LinkGene(0, 3), LinkGene(1, 3), LinkGene(2, 4), LinkGene(0, 5)]
