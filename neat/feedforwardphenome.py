@@ -40,7 +40,6 @@ class FeedForwardPhenome:
     def __init__(self, genome):
         self.graph, node_lists = self._construct_graph(genome)
         self.input_nodes, self.hidden_nodes, self.output_nodes = node_lists
-
         self.links = [(g.src, g.sink) for g in genome.link_genes]
         self.node_evals = []
 
@@ -78,9 +77,9 @@ class FeedForwardPhenome:
         return [self.values[i] for i in self.output_nodes]
 
     def draw(self):
-        pos = {0: (0, 0)}
+        pos = {0: (-1.5, 0)}
         for idx in range(len(self.input_nodes)):
-            pos[idx+1] = (idx+1, 0)
+            pos[idx+1] = (idx, 0)
         for idx, val in enumerate(self.output_nodes):
             pos[val] = (idx, 4)
         for idx, val in enumerate(self.hidden_nodes):

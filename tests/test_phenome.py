@@ -21,20 +21,27 @@ class TestPhenome(TestCase):
                                 LinkGene(0, 3, weight=1),
                                 LinkGene(0, 4, weight=1)]
         self.genome = Genome(node_genes=self.test_node_genes, link_genes=self.test_link_genes)
+        self.phenome = FeedForwardPhenome(self.genome)
 
     def test_phenome_gives_correct_output_for_simple_net(self):
-        phenome = FeedForwardPhenome(self.genome)
-        outputs = phenome.serial_activate([1.0, 1.0])
+        outputs = self.phenome.serial_activate([1.0, 1.0])
         assert outputs == [3.0, 3.0], "Outpt should be [3, 3], got %s" % ("%.02f, %.02f" % (outputs[0], outputs[1]))
 
     def test_phenome_requires_correct_num_inputs(self):
-        phenome = FeedForwardPhenome(self.genome)
         try:
-            phenome.serial_activate([1.0, 1.0, 1.0])
+            self.phenome.serial_activate([1.0, 1.0, 1.0])
             self.fail("Phenome should raise exception if number of inputs is wrong")
         except ValueError:
             pass
 
-    def test_draw(self):
-        phenome = FeedForwardPhenome(self.genome)
+    def test_phenome_returns_correct_num_outputs(self):
+        outputs = self.phenome.serial_activate([1.0, 1.0])
+        assert len(outputs) == len(self.genome.output_genes)
+
+    def test_draw_premade_phenome(self):
+        self.phenome.draw()
+
+    def test_draw_random_phenome(self):
+        gen = Genome(n_inputs=3, n_outputs=3)
+        phenome = FeedForwardPhenome(genome=gen)
         phenome.draw()

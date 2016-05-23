@@ -3,10 +3,14 @@ from .genes import NodeGene, LinkGene
 
 class Genome:
     def __init__(self, *, n_inputs=None, n_outputs=None, node_genes=None, link_genes=None):
+        NodeGene.counter = 1
         self.link_genes = []
         self.input_genes = []
         self.hidden_genes = []
         self.output_genes = []
+
+        if node_genes is None and link_genes is not None:
+            raise ValueError("Cannot pass links but not nodes to genome")
 
         if node_genes is None:
             if n_inputs is None or n_outputs is None:
@@ -26,10 +30,7 @@ class Genome:
             if n_outputs is not None:
                 assert n_outputs == len(self.output_genes)
         elif node_genes is None:
-            for i in range(n_inputs):
-                self.input_genes.append(NodeGene(node_type='INPUT'))
-            for i in range(n_outputs):
-                self.output_genes.append(NodeGene(node_type='OUTPUT'))
+            self._random_genome(n_inputs, n_outputs)
 
         if link_genes is not None:
             for gene in link_genes:
@@ -51,6 +52,16 @@ class Genome:
         for node in self.output_genes:
             if node.idx == idx:
                 return node
+
+    def _random_genome(self, n_inputs, n_outputs):
+        for i in range(n_inputs):
+            self.input_genes.append(NodeGene(node_type='INPUT'))
+        for i in range(n_outputs):
+            self.output_genes.append(NodeGene(node_type='OUTPUT'))
+        for sink in self.output_genes:
+            self.link_genes.append(LinkGene(0, sink.idx))
+            for src in self.input_genes:
+                self.link_genes.append(LinkGene(src.idx, sink.idx))
 
     def _parse_node_genes(self, node_genes):
         for gene in node_genes:
