@@ -51,10 +51,22 @@ class Genome:
 
         assert not self._has_duplicate_node_indices(), "Genome has duplicate node indices"
 
+        node_indices = [g.idx for g in self.input_genes]
+        node_indices.extend([g.idx for g in self.output_genes])
+        node_indices.extend([g.idx for g in self.hidden_genes])
+        node_indices.append(0)
+
         if link_genes is not None:
             for gene in link_genes:
                 self.link_genes.append(gene)
-            self.n_links = len(self.link_genes)
+        self.n_links = len(self.link_genes)
+
+        for gene in self.link_genes:
+            if gene.src not in node_indices:
+                print(" ".join(str(a) for a in node_indices))
+                raise ValueError("Link connecting to missing node")
+            elif gene.sink not in node_indices:
+                raise ValueError("Link connecting to missing node")
 
     def _has_duplicate_node_indices(self):
         node_genes = self.input_genes + self.hidden_genes + self.output_genes

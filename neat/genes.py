@@ -1,8 +1,9 @@
 
 
 class NodeGene:
-    #Counter starts at zero, phenotype will always create a bia
+    #Counter starts at zero, phenotype will always create a bias
     #node with index 0
+    #TODO initialize this at program start
     counter = 1
 
     def __init__(self, *, activation='sigmoid', node_type='HIDDEN', idx=-1):

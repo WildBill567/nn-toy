@@ -7,8 +7,18 @@ from neat.genome import Genome
 class TestGenome(TestCase):
 
     def setUp(self):
-        self.test_node_genes = [NodeGene(node_type='INPUT'), NodeGene(node_type='INPUT'), NodeGene(node_type='OUTPUT'), NodeGene(node_type='OUTPUT')]
-        self.test_link_genes = [LinkGene(0, 3), LinkGene(1, 3), LinkGene(2, 4)]
+        NodeGene.counter = 1
+        self.test_node_genes = [NodeGene(node_type='INPUT'), NodeGene(node_type='INPUT'),
+                                NodeGene(node_type='OUTPUT'), NodeGene(node_type='OUTPUT')]
+        self.test_link_genes = [LinkGene(2, 3), LinkGene(1, 3)]
+
+    def test_genome_only_links_to_valid_nodes(self):
+        link_tester = [LinkGene(0, 3), LinkGene(1, 3), LinkGene(2, 4), LinkGene(0, 5)]
+        try:
+            genome = Genome(node_genes=self.test_node_genes, link_genes=link_tester)
+            self.fail("Genome should raise exception if link connects to non-existing node")
+        except ValueError:
+            pass
 
     def test_genome_creates_correct_number_of_links(self):
         genome = Genome(node_genes=self.test_node_genes, link_genes=self.test_link_genes)
